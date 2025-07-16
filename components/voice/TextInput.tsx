@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { validateTextInput } from '@/lib/utils';
 import { TEXT_LIMITS } from '@/lib/constants';
 
@@ -10,9 +10,12 @@ interface TextInputProps {
   processingTime?: number;
 }
 
+const BREAK_TAG = '<break time="1.0s" />';
+
 const TextInput = ({ onSubmit, isLoading, processingTime }: TextInputProps) => {
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = () => {
     const validationError = validateTextInput(text);
@@ -30,6 +33,23 @@ const TextInput = ({ onSubmit, isLoading, processingTime }: TextInputProps) => {
     if (error) setError(null);
   };
 
+  const handleInsertBreak = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const newText = text.substring(0, start) + BREAK_TAG + text.substring(end);
+    
+    setText(newText);
+    
+    // 커서를 break 태그 다음으로 이동
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + BREAK_TAG.length, start + BREAK_TAG.length);
+    }, 0);
+  };
+
   const remainingChars = TEXT_LIMITS.MAX_LENGTH - text.length;
 
   return (
@@ -39,6 +59,7 @@ const TextInput = ({ onSubmit, isLoading, processingTime }: TextInputProps) => {
           변환할 텍스트를 입력하세요
         </label>
         <textarea
+          ref={textareaRef}
           id="text-input"
           rows={12}
           value={text}
@@ -53,9 +74,19 @@ const TextInput = ({ onSubmit, isLoading, processingTime }: TextInputProps) => {
           <div className="text-sm text-gray-500">
             {remainingChars >= 0 ? `${remainingChars}자 남음` : `${Math.abs(remainingChars)}자 초과`}
           </div>
-          {error && (
-            <div className="text-sm text-red-600">{error}</div>
-          )}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={handleInsertBreak}
+              disabled={isLoading}
+              className="text-xs bg-white hover:bg-gray-50 text-gray-700 border border-blue-500 px-3 py-1 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="1초 휴식 태그 삽입"
+            >
+              Break 삽입
+            </button>
+            {error && (
+              <div className="text-sm text-red-600">{error}</div>
+            )}
+          </div>
         </div>
       </div>
       
