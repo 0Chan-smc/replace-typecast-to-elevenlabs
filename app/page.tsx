@@ -136,9 +136,16 @@ const HomePage = () => {
 
         {audioItems.length > 0 && (
           <div className="space-y-4 mt-6">
-            <h2 className="text-xl font-semibold text-gray-800">생성된 음성 목록</h2>
-            {audioItems.map((audioItem) => (
-              <AudioPlayer key={audioItem.id} audioItem={audioItem} />
+            <h2 className="text-xl font-semibold text-gray-800">
+              생성된 음성 목록 ({audioItems.length}개)
+            </h2>
+            {audioItems.map((audioItem, index) => (
+              <div key={audioItem.id} className="relative">
+                <div className="absolute -left-12 top-4 text-sm font-bold text-white bg-blue-600 rounded-full w-8 h-8 flex items-center justify-center shadow-md border-2 border-white">
+                  {audioItems.length - index}
+                </div>
+                <AudioPlayer audioItem={audioItem} />
+              </div>
             ))}
           </div>
         )}
