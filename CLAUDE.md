@@ -414,9 +414,11 @@ const validateTextInput = (text: string): string | null => {
 - **Variable names** can remain in English for technical clarity
 
 ### Commit Message Guidelines
-- **No "Claude Code" mentions** in commit messages
+- **NEVER include "Claude Code", "Claude", or AI assistant references** in commit messages
+- **NEVER include Co-Authored-By: Claude** lines in commit messages  
+- **NEVER include generated with Claude Code** footers in commit messages
 - Use descriptive, conventional commits
-- Focus on feature/fix descriptions
+- Focus on feature/fix descriptions only
 
 ```bash
 # Good commit messages
@@ -424,9 +426,13 @@ feat: 오디오 플레이어 컴포넌트 추가
 fix: ElevenLabs API 응답 처리 개선
 style: 타이밍 디스플레이 UI 개선
 
-# Avoid
+# NEVER do this
 feat: Claude Code로 오디오 플레이어 추가
+🤖 Generated with [Claude Code](https://claude.ai/code)
+Co-Authored-By: Claude <noreply@anthropic.com>
 ```
+
+**IMPORTANT**: Claude must ALWAYS follow these commit message rules without exception.
 
 ## Common Tasks
 
