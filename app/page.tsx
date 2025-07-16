@@ -8,6 +8,7 @@ import VoiceSettings from '@/components/voice/VoiceSettings';
 import { createAudioUrl, cleanupAudioUrl } from '@/lib/audio-utils';
 import { handleApiError } from '@/lib/utils';
 import { DEFAULT_VOICE_SETTINGS } from '@/lib/voice-settings';
+import { parseTextForStereo, getCleanText, createChannelAudio } from '@/lib/stereo-utils';
 import type { AudioItem } from '@/types/audio';
 import type { VoiceSettings as VoiceSettingsType } from '@/types/api';
 
@@ -17,6 +18,7 @@ const HomePage = () => {
   const [error, setError] = useState<string | null>(null);
   const [voiceSettings, setVoiceSettings] = useState<VoiceSettingsType>(DEFAULT_VOICE_SETTINGS);
   const [currentProcessingTime, setCurrentProcessingTime] = useState<number>(0);
+  const [isStereoMode, setIsStereoMode] = useState(false);
 
   // localStorage에서 Voice Settings 불러오기
   useEffect(() => {
@@ -53,13 +55,22 @@ const HomePage = () => {
     }, 100);
 
     try {
+      // 스테레오 모드일 때 텍스트 파싱
+      let apiText = text;
+      if (isStereoMode) {
+        const segments = parseTextForStereo(text);
+        apiText = getCleanText(text);
+        console.log('Stereo segments:', segments);
+      }
+
+      // 1단계: ElevenLabs API 호출
       const response = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          text,
+          text: apiText,
           voice_settings: voiceSettings 
         }),
       });
@@ -70,16 +81,38 @@ const HomePage = () => {
       }
 
       const processingTimeHeader = response.headers.get('X-Processing-Time');
-      const processingTime = processingTimeHeader ? parseInt(processingTimeHeader) : 0;
+      const apiProcessingTime = processingTimeHeader ? parseInt(processingTimeHeader) : 0;
 
       const audioData = await response.arrayBuffer();
-      const audioUrl = createAudioUrl(audioData);
+      let finalAudioUrl: string;
+      let totalProcessingTime = apiProcessingTime;
+
+      // 2단계: 스테레오 모드일 때 ffmpeg 처리
+      if (isStereoMode) {
+        try {
+          // 스테레오 처리 시작 시간
+          const stereoStartTime = Date.now();
+          
+          // 임시로 간단한 스테레오 변환 (실제 세그먼트 기반 처리는 추후 구현)
+          const stereoBlob = await createChannelAudio(audioData, 'left');
+          finalAudioUrl = createAudioUrl(await stereoBlob.arrayBuffer());
+          
+          const stereoProcessingTime = Date.now() - stereoStartTime;
+          totalProcessingTime = apiProcessingTime + stereoProcessingTime;
+        } catch (stereoError) {
+          console.error('스테레오 처리 오류:', stereoError);
+          // 스테레오 처리 실패 시 원본 오디오 사용
+          finalAudioUrl = createAudioUrl(audioData);
+        }
+      } else {
+        finalAudioUrl = createAudioUrl(audioData);
+      }
       
       const newAudioItem: AudioItem = {
         id: crypto.randomUUID(),
-        audioUrl,
+        audioUrl: finalAudioUrl,
         text,
-        processingTime,
+        processingTime: totalProcessingTime,
         createdAt: new Date(),
         voiceSettings,
       };
@@ -96,15 +129,56 @@ const HomePage = () => {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <main className={`min-h-screen transition-colors duration-300 ${
+      isStereoMode 
+        ? 'bg-gradient-to-br from-indigo-100 to-purple-200' 
+        : 'bg-gradient-to-br from-blue-50 to-indigo-100'
+    }`}>
       <div className="mx-auto max-w-4xl p-6">
         <div className="text-center py-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             세마리토끼 Typecast를 ElevenLabs로 대체
           </h1>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-lg text-gray-600 mb-6">
             ElevenLabs API를 사용한 텍스트 음성 변환 서비스
           </p>
+          
+          {/* 스테레오 모드 토글 */}
+          <div className="flex items-center justify-center space-x-3 mb-6">
+            <span className={`text-sm font-medium ${isStereoMode ? 'text-gray-500' : 'text-gray-900'}`}>
+              일반 모드
+            </span>
+            <div className="relative">
+              <input
+                type="checkbox"
+                checked={isStereoMode}
+                onChange={(e) => setIsStereoMode(e.target.checked)}
+                className="sr-only"
+                id="stereo-toggle"
+              />
+              <label
+                htmlFor="stereo-toggle"
+                className={`flex items-center cursor-pointer w-14 h-8 rounded-full transition-colors ${
+                  isStereoMode ? 'bg-purple-600' : 'bg-gray-300'
+                }`}
+              >
+                <div
+                  className={`w-6 h-6 bg-white rounded-full shadow transition-transform ${
+                    isStereoMode ? 'translate-x-7' : 'translate-x-1'
+                  }`}
+                />
+              </label>
+            </div>
+            <span className={`text-sm font-medium ${isStereoMode ? 'text-purple-700' : 'text-gray-500'}`}>
+              스테레오 모드
+            </span>
+          </div>
+          
+          {isStereoMode && (
+            <div className="text-sm text-purple-700 bg-purple-50 rounded-lg p-3 mx-auto max-w-lg">
+              💡 스테레오 모드: [L]좌측[/L], [R]우측[/R] 태그를 사용하여 공간감 있는 음성을 생성하세요
+            </div>
+          )}
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -115,6 +189,7 @@ const HomePage = () => {
                 onSubmit={handleTextSubmit} 
                 isLoading={isLoading} 
                 processingTime={currentProcessingTime}
+                isStereoMode={isStereoMode}
               />
               
               {error && (
