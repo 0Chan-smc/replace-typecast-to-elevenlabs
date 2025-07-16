@@ -47,12 +47,14 @@ export const VOICE_SETTINGS_LABELS = {
     leftLabel: '가변적',
     rightLabel: '안정적',
     warning: '30% 미만은 불안정할 수 있습니다',
+    tooltip: '음성의 안정성과 생성 간의 무작위성을 결정합니다. 낮은 값은 더 넓은 감정 표현 범위를 제공합니다. 높은 값은 제한된 감정으로 단조로운 음성이 될 수 있습니다.',
   },
   similarity_boost: {
     label: 'Similarity',
     description: '유사성',
     leftLabel: '낮음',
     rightLabel: '높음',
+    tooltip: '원본 화자와의 유사성을 높입니다. 이 설정을 사용하면 약간 더 높은 연산 부하가 필요하여 지연 시간이 증가할 수 있습니다.'
   },
   style: {
     label: 'Style Exaggeration',
@@ -60,16 +62,19 @@ export const VOICE_SETTINGS_LABELS = {
     leftLabel: '없음',
     rightLabel: '과장됨',
     warning: '50% 초과는 불안정할 수 있습니다',
+    tooltip: '음성의 스타일 과장 정도를 결정합니다. 원본 화자의 스타일을 증폭시키려고 시도합니다. 추가적인 연산 리소스를 소비하며 0이 아닌 값으로 설정 시 지연 시간이 증가할 수 있습니다.'
   },
   speed: {
     label: 'Speed',
     description: '속도',
     leftLabel: '느림',
     rightLabel: '빠름',
+    tooltip: '음성의 속도를 조절합니다. 1.0이 기본 속도이며, 1.0보다 작은 값은 음성을 느리게, 1.0보다 큰 값은 음성을 빠르게 만듭니다.'
   },
   use_speaker_boost: {
     label: 'Speaker boost',
     description: '스피커 부스트',
+    tooltip: '원본 화자와의 유사성을 증폭시킵니다. 이 설정을 사용하면 약간 더 높은 연산 부하가 필요하여 지연 시간이 증가합니다.'
   },
 } as const;
 

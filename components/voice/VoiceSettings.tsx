@@ -5,6 +5,7 @@ import { RotateCcw, Shuffle } from 'lucide-react';
 import type { VoiceSettings, SeedSettings } from '@/types/api';
 import { DEFAULT_VOICE_SETTINGS, DEFAULT_SEED_SETTINGS, VOICE_SETTINGS_RANGES, VOICE_SETTINGS_LABELS, generateRandomSeed, validateSeed } from '@/lib/voice-settings';
 import { getDisplayValue } from '@/lib/value-display';
+import Tooltip from '@/components/ui/Tooltip';
 
 interface VoiceSettingsProps {
   settings: VoiceSettings;
@@ -75,8 +76,9 @@ const VoiceSettings = ({ settings, seedSettings, onSettingsChange, onSeedSetting
         {/* Speed */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
               {VOICE_SETTINGS_LABELS.speed.label}
+              <Tooltip content={VOICE_SETTINGS_LABELS.speed.tooltip} />
             </label>
             <span className="text-sm text-gray-500">{getDisplayValue(settings.speed, 'speed')}</span>
           </div>
@@ -98,8 +100,9 @@ const VoiceSettings = ({ settings, seedSettings, onSettingsChange, onSeedSetting
         {/* Stability */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
               {VOICE_SETTINGS_LABELS.stability.label}
+              <Tooltip content={VOICE_SETTINGS_LABELS.stability.tooltip} />
             </label>
             <span className="text-sm text-gray-500">{getDisplayValue(settings.stability, 'stability')}</span>
           </div>
@@ -126,8 +129,9 @@ const VoiceSettings = ({ settings, seedSettings, onSettingsChange, onSeedSetting
         {/* Similarity */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
               {VOICE_SETTINGS_LABELS.similarity_boost.label}
+              <Tooltip content={VOICE_SETTINGS_LABELS.similarity_boost.tooltip} />
             </label>
             <span className="text-sm text-gray-500">{getDisplayValue(settings.similarity_boost, 'similarity_boost')}</span>
           </div>
@@ -149,8 +153,9 @@ const VoiceSettings = ({ settings, seedSettings, onSettingsChange, onSeedSetting
         {/* Style Exaggeration */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
               {VOICE_SETTINGS_LABELS.style.label}
+              <Tooltip content={VOICE_SETTINGS_LABELS.style.tooltip} />
             </label>
             <span className="text-sm text-gray-500">{getDisplayValue(settings.style, 'style')}</span>
           </div>
@@ -176,8 +181,9 @@ const VoiceSettings = ({ settings, seedSettings, onSettingsChange, onSeedSetting
 
         {/* Speaker Boost */}
         <div className="flex items-center justify-between pt-2">
-          <label className="text-sm font-medium text-gray-700">
+          <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
             {VOICE_SETTINGS_LABELS.use_speaker_boost.label}
+            <Tooltip content={VOICE_SETTINGS_LABELS.use_speaker_boost.tooltip} />
           </label>
           <div className="relative">
             <input
