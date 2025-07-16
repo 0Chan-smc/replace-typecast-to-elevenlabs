@@ -6,21 +6,16 @@ import LoadingTimer from '@/components/voice/LoadingTimer';
 import AudioPlayer from '@/components/voice/AudioPlayer';
 import { createAudioUrl, cleanupAudioUrl } from '@/lib/audio-utils';
 import { handleApiError } from '@/lib/utils';
+import type { AudioItem } from '@/types/audio';
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [processingTime, setProcessingTime] = useState<number | null>(null);
+  const [audioItems, setAudioItems] = useState<AudioItem[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const handleTextSubmit = async (text: string) => {
     setIsLoading(true);
     setError(null);
-    
-    if (audioUrl) {
-      cleanupAudioUrl(audioUrl);
-      setAudioUrl(null);
-    }
 
     try {
       const response = await fetch('/api/text-to-speech', {
@@ -37,13 +32,20 @@ const HomePage = () => {
       }
 
       const processingTimeHeader = response.headers.get('X-Processing-Time');
-      if (processingTimeHeader) {
-        setProcessingTime(parseInt(processingTimeHeader));
-      }
+      const processingTime = processingTimeHeader ? parseInt(processingTimeHeader) : 0;
 
       const audioData = await response.arrayBuffer();
-      const url = createAudioUrl(audioData);
-      setAudioUrl(url);
+      const audioUrl = createAudioUrl(audioData);
+      
+      const newAudioItem: AudioItem = {
+        id: crypto.randomUUID(),
+        audioUrl,
+        text,
+        processingTime,
+        createdAt: new Date(),
+      };
+
+      setAudioItems(prev => [newAudioItem, ...prev]);
     } catch (error) {
       const errorMessage = error instanceof Error ? handleApiError(error) : '알 수 없는 오류가 발생했습니다.';
       setError(errorMessage);
@@ -69,22 +71,21 @@ const HomePage = () => {
           
           {isLoading && <LoadingTimer isLoading={isLoading} />}
           
-          {processingTime && !isLoading && (
-            <div className="text-center text-sm text-gray-600">
-              처리 시간: {(processingTime / 1000).toFixed(2)}초
-            </div>
-          )}
-          
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-red-700 text-sm">{error}</p>
             </div>
           )}
-          
-          {audioUrl && !isLoading && (
-            <AudioPlayer audioUrl={audioUrl} />
-          )}
         </div>
+
+        {audioItems.length > 0 && (
+          <div className="space-y-4 mt-6">
+            <h2 className="text-xl font-semibold text-gray-800">생성된 음성 목록</h2>
+            {audioItems.map((audioItem) => (
+              <AudioPlayer key={audioItem.id} audioItem={audioItem} />
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );

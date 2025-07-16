@@ -6,7 +6,8 @@ import { formatTime } from '@/lib/utils';
 import { downloadAudio } from '@/lib/audio-utils';
 import type { AudioPlayerProps, AudioPlayerState } from '@/types/audio';
 
-const AudioPlayer = ({ audioUrl }: AudioPlayerProps) => {
+const AudioPlayer = ({ audioItem }: AudioPlayerProps) => {
+  const { audioUrl, text, processingTime, createdAt } = audioItem;
   const audioRef = useRef<HTMLAudioElement>(null);
   const [audioState, setAudioState] = useState<AudioPlayerState>({
     isPlaying: false,
@@ -84,7 +85,7 @@ const AudioPlayer = ({ audioUrl }: AudioPlayerProps) => {
     try {
       const response = await fetch(audioUrl);
       const blob = await response.blob();
-      const timestamp = new Date().getTime();
+      const timestamp = createdAt.getTime();
       downloadAudio(blob, `voice-${timestamp}`);
     } catch (error) {
       console.error('다운로드 오류:', error);
@@ -104,6 +105,15 @@ const AudioPlayer = ({ audioUrl }: AudioPlayerProps) => {
       role="region" 
       aria-label="오디오 플레이어"
     >
+      <div className="space-y-2">
+        <div className="text-sm text-gray-500">
+          생성 시간: {createdAt.toLocaleString('ko-KR')} · <span className="font-bold">처리 시간: {(processingTime / 1000).toFixed(2)}초</span>
+        </div>
+        <div className="text-sm text-gray-700 bg-gray-50 rounded p-3">
+          {text}
+        </div>
+      </div>
+
       <audio
         ref={audioRef}
         src={audioUrl}

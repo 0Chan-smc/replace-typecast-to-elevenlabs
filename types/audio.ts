@@ -5,9 +5,17 @@ export interface AudioPlayerState {
   volume: number;
 }
 
-export interface AudioPlayerProps {
+export interface AudioItem {
+  id: string;
   audioUrl: string;
+  text: string;
+  processingTime: number;
+  createdAt: Date;
   timestamps?: TimestampData[];
+}
+
+export interface AudioPlayerProps {
+  audioItem: AudioItem;
 }
 
 export interface TimestampData {
