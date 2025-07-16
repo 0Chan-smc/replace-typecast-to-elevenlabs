@@ -1,11 +1,16 @@
-import type { VoiceSettings } from '@/types/api';
+import type { VoiceSettings, SeedSettings } from '@/types/api';
 
 export const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
-  stability: 50,
-  similarity_boost: 50,
-  style: 50,
-  speed: 50,
-  use_speaker_boost: false,
+  stability: 30,
+  similarity_boost: 60,
+  style: 20,
+  speed: 60, // 1.15 속도에 해당하는 UI 값
+  use_speaker_boost: true,
+};
+
+export const DEFAULT_SEED_SETTINGS: SeedSettings = {
+  useRandomSeed: true,
+  fixedSeed: 0,
 };
 
 export const VOICE_SETTINGS_RANGES = {
@@ -67,3 +72,13 @@ export const VOICE_SETTINGS_LABELS = {
     description: '스피커 부스트',
   },
 } as const;
+
+// Seed 값 생성 함수
+export const generateRandomSeed = (): number => {
+  return Math.floor(Math.random() * 4294967295); // 0 to 4294967295
+};
+
+// Seed 값 검증 함수
+export const validateSeed = (seed: number): boolean => {
+  return Number.isInteger(seed) && seed >= 0 && seed <= 4294967295;
+};

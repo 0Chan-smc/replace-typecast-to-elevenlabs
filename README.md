@@ -21,17 +21,20 @@ ElevenLabs API를 사용한 텍스트 음성 변환 서비스입니다.
 ## 개발 환경 설정
 
 1. 의존성 설치:
+
 ```bash
 npm install
 ```
 
 2. 환경 변수 설정:
-`.env.local` 파일을 생성하고 ElevenLabs API 키를 설정하세요:
+   `.env.local` 파일을 생성하고 ElevenLabs API 키를 설정하세요:
+
 ```bash
 ELEVENLABS_API_KEY=your_api_key_here
 ```
 
 3. 개발 서버 실행:
+
 ```bash
 npm run dev
 ```
@@ -49,6 +52,7 @@ npm run dev
 ## API 설정
 
 ElevenLabs API 설정:
+
 - Voice ID: `Fcu5ohsG7HuIwJZBxrun`
 - Model: `eleven_multilingual_v2`
 - Output Format: `mp3_44100_128`

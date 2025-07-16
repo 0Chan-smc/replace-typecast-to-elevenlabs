@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { validateTextInput } from '@/lib/utils';
 import { TEXT_LIMITS } from '@/lib/constants';
 
@@ -8,7 +8,9 @@ interface TextInputProps {
   onSubmit: (text: string) => void;
   isLoading: boolean;
   processingTime?: number;
+  processingStage?: 'api' | 'stereo' | null;
   isStereoMode?: boolean;
+  defaultText?: string;
 }
 
 const BREAK_TAG = '<break time="1.0s" />';
@@ -17,10 +19,17 @@ const LEFT_TAG_END = '[/L]';
 const RIGHT_TAG_START = '[R]';
 const RIGHT_TAG_END = '[/R]';
 
-const TextInput = ({ onSubmit, isLoading, processingTime, isStereoMode }: TextInputProps) => {
-  const [text, setText] = useState('');
+const TextInput = ({ onSubmit, isLoading, processingTime, processingStage, isStereoMode, defaultText }: TextInputProps) => {
+  const [text, setText] = useState(defaultText || '');
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // defaultText 변경 시 텍스트 업데이트 (빈 텍스트일 때만)
+  useEffect(() => {
+    if (defaultText && text.trim() === '') {
+      setText(defaultText);
+    }
+  }, [defaultText]);
 
   const handleSubmit = () => {
     const validationError = validateTextInput(text);
@@ -176,7 +185,10 @@ const TextInput = ({ onSubmit, isLoading, processingTime, isStereoMode }: TextIn
           }`}
         >
           {isLoading 
-            ? (processingTime ? `생성 중... ${(processingTime / 1000).toFixed(1)}초${isStereoMode ? ' (2단계 처리)' : ''}` : '생성 중...')
+            ? (processingTime 
+                ? `${processingStage === 'api' ? '1단계' : processingStage === 'stereo' ? '2단계' : ''} 생성 중... ${(processingTime / 1000).toFixed(1)}초${processingStage === 'stereo' ? ' (스테레오 처리)' : processingStage === 'api' && isStereoMode ? ' (음성 생성)' : ''}` 
+                : '생성 중...'
+              )
             : '음성 생성'
           }
         </button>

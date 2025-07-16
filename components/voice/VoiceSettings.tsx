@@ -1,17 +1,19 @@
 "use client";
 
 import { useState } from 'react';
-import { RotateCcw } from 'lucide-react';
-import type { VoiceSettings } from '@/types/api';
-import { DEFAULT_VOICE_SETTINGS, VOICE_SETTINGS_RANGES, VOICE_SETTINGS_LABELS } from '@/lib/voice-settings';
+import { RotateCcw, Shuffle } from 'lucide-react';
+import type { VoiceSettings, SeedSettings } from '@/types/api';
+import { DEFAULT_VOICE_SETTINGS, DEFAULT_SEED_SETTINGS, VOICE_SETTINGS_RANGES, VOICE_SETTINGS_LABELS, generateRandomSeed, validateSeed } from '@/lib/voice-settings';
 import { getDisplayValue } from '@/lib/value-display';
 
 interface VoiceSettingsProps {
   settings: VoiceSettings;
+  seedSettings: SeedSettings;
   onSettingsChange: (settings: VoiceSettings) => void;
+  onSeedSettingsChange: (seedSettings: SeedSettings) => void;
 }
 
-const VoiceSettings = ({ settings, onSettingsChange }: VoiceSettingsProps) => {
+const VoiceSettings = ({ settings, seedSettings, onSettingsChange, onSeedSettingsChange }: VoiceSettingsProps) => {
   const handleSliderChange = (key: keyof Omit<VoiceSettings, 'use_speaker_boost'>, value: number) => {
     onSettingsChange({
       ...settings,
@@ -28,6 +30,32 @@ const VoiceSettings = ({ settings, onSettingsChange }: VoiceSettingsProps) => {
 
   const handleReset = () => {
     onSettingsChange(DEFAULT_VOICE_SETTINGS);
+    onSeedSettingsChange(DEFAULT_SEED_SETTINGS);
+  };
+
+  const handleSeedToggle = (useRandom: boolean) => {
+    onSeedSettingsChange({
+      ...seedSettings,
+      useRandomSeed: useRandom,
+    });
+  };
+
+  const handleFixedSeedChange = (seed: number) => {
+    if (validateSeed(seed)) {
+      onSeedSettingsChange({
+        ...seedSettings,
+        fixedSeed: seed,
+      });
+    }
+  };
+
+  const handleGenerateRandomSeed = () => {
+    const newSeed = generateRandomSeed();
+    onSeedSettingsChange({
+      ...seedSettings,
+      fixedSeed: newSeed,
+      useRandomSeed: false,
+    });
   };
 
   return (
@@ -171,6 +199,61 @@ const VoiceSettings = ({ settings, onSettingsChange }: VoiceSettingsProps) => {
                 }`}
               />
             </label>
+          </div>
+        </div>
+
+        {/* Seed Settings */}
+        <div className="pt-4 border-t border-gray-200">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-gray-700">
+                Seed 값
+              </label>
+              <button
+                onClick={handleGenerateRandomSeed}
+                className="p-1.5 text-gray-500 hover:text-gray-700 transition-colors"
+                title="랜덤 Seed 생성"
+              >
+                <Shuffle className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="radio"
+                  checked={seedSettings.useRandomSeed}
+                  onChange={() => handleSeedToggle(true)}
+                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">랜덤</span>
+              </label>
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="radio"
+                  checked={!seedSettings.useRandomSeed}
+                  onChange={() => handleSeedToggle(false)}
+                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">고정</span>
+              </label>
+            </div>
+            
+            {!seedSettings.useRandomSeed && (
+              <input
+                type="number"
+                min="0"
+                max="4294967295"
+                value={seedSettings.fixedSeed}
+                onChange={(e) => handleFixedSeedChange(parseInt(e.target.value) || 0)}
+                className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                placeholder="0 - 4294967295"
+              />
+            )}
+            
+            <div className="text-xs text-gray-500 leading-relaxed">
+              동일한 seed와 설정으로 반복 요청 시 같은 결과를 얻을 수 있습니다. (완전한 보장은 아님)
+            </div>
           </div>
         </div>
       </div>

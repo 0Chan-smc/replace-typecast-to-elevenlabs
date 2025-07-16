@@ -5,7 +5,7 @@ import type { VoiceSettings } from '@/types/api';
 
 export const POST = async (request: NextRequest) => {
   try {
-    const { text, voice_settings } = await request.json();
+    const { text, voice_settings, seed } = await request.json();
 
     if (!text || typeof text !== 'string') {
       return Response.json({ error: '텍스트가 필요합니다.' }, { status: 400 });
@@ -31,6 +31,10 @@ export const POST = async (request: NextRequest) => {
 
     if (apiVoiceSettings) {
       requestBody.voice_settings = apiVoiceSettings;
+    }
+
+    if (seed !== undefined && typeof seed === 'number') {
+      requestBody.seed = seed;
     }
 
     // 디버깅용 로그

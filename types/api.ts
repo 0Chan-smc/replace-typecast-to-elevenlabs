@@ -10,6 +10,12 @@ export interface ElevenLabsRequest {
   text: string;
   model_id: string;
   voice_settings?: VoiceSettings;
+  seed?: number;
+}
+
+export interface SeedSettings {
+  useRandomSeed: boolean;
+  fixedSeed: number;
 }
 
 export interface ElevenLabsResponse {

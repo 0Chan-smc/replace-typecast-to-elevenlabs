@@ -12,11 +12,14 @@ export interface AudioItem {
   processingTime: number;
   createdAt: Date;
   voiceSettings: import('@/types/api').VoiceSettings;
+  seed: number;
   timestamps?: TimestampData[];
 }
 
 export interface AudioPlayerProps {
   audioItem: AudioItem;
+  autoPlay?: boolean;
+  isNew?: boolean;
 }
 
 export interface TimestampData {

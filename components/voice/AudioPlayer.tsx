@@ -7,8 +7,8 @@ import { downloadAudio } from '@/lib/audio-utils';
 import { getDisplayValue } from '@/lib/value-display';
 import type { AudioPlayerProps, AudioPlayerState } from '@/types/audio';
 
-const AudioPlayer = ({ audioItem }: AudioPlayerProps) => {
-  const { audioUrl, text, processingTime, createdAt, voiceSettings } = audioItem;
+const AudioPlayer = ({ audioItem, autoPlay = false, isNew = false }: AudioPlayerProps) => {
+  const { audioUrl, text, processingTime, createdAt, voiceSettings, seed } = audioItem;
   const audioRef = useRef<HTMLAudioElement>(null);
   const [audioState, setAudioState] = useState<AudioPlayerState>({
     isPlaying: false,
@@ -43,16 +43,31 @@ const AudioPlayer = ({ audioItem }: AudioPlayerProps) => {
       }));
     };
 
+    const handleCanPlay = () => {
+      if (autoPlay) {
+        audio.play().then(() => {
+          setAudioState(prev => ({
+            ...prev,
+            isPlaying: true,
+          }));
+        }).catch(error => {
+          console.error('자동 재생 실패:', error);
+        });
+      }
+    };
+
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('canplay', handleCanPlay);
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('canplay', handleCanPlay);
     };
-  }, [audioUrl]);
+  }, [audioUrl, autoPlay]);
 
   const handlePlayPause = () => {
     const audio = audioRef.current;
@@ -102,7 +117,9 @@ const AudioPlayer = ({ audioItem }: AudioPlayerProps) => {
 
   return (
     <div 
-      className="bg-white rounded-lg border p-6 space-y-4"
+      className={`bg-white rounded-lg border p-6 space-y-4 transition-all duration-500 ${
+        isNew ? 'animate-pulse scale-105 border-blue-500 shadow-lg' : 'animate-none scale-100'
+      }`}
       role="region" 
       aria-label="오디오 플레이어"
     >
@@ -121,8 +138,9 @@ const AudioPlayer = ({ audioItem }: AudioPlayerProps) => {
             <div>Similarity: {getDisplayValue(voiceSettings.similarity_boost, 'similarity_boost')}</div>
             <div>Style: {getDisplayValue(voiceSettings.style, 'style')}</div>
           </div>
-          <div className="mt-1">
-            Speaker boost: {voiceSettings.use_speaker_boost ? '켜짐' : '꺼짐'}
+          <div className="mt-1 flex justify-between">
+            <span>Speaker boost: {voiceSettings.use_speaker_boost ? '켜짐' : '꺼짐'}</span>
+            <span className="font-mono text-purple-900 font-semibold">Seed: {seed}</span>
           </div>
         </div>
       </div>
