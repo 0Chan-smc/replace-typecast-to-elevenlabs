@@ -4,10 +4,11 @@ import { useRef, useState, useEffect } from 'react';
 import { Play, Pause, Download } from 'lucide-react';
 import { formatTime } from '@/lib/utils';
 import { downloadAudio } from '@/lib/audio-utils';
+import { getDisplayValue } from '@/lib/value-display';
 import type { AudioPlayerProps, AudioPlayerState } from '@/types/audio';
 
 const AudioPlayer = ({ audioItem }: AudioPlayerProps) => {
-  const { audioUrl, text, processingTime, createdAt } = audioItem;
+  const { audioUrl, text, processingTime, createdAt, voiceSettings } = audioItem;
   const audioRef = useRef<HTMLAudioElement>(null);
   const [audioState, setAudioState] = useState<AudioPlayerState>({
     isPlaying: false,
@@ -111,6 +112,18 @@ const AudioPlayer = ({ audioItem }: AudioPlayerProps) => {
         </div>
         <div className="text-sm text-gray-700 bg-gray-50 rounded p-3">
           {text}
+        </div>
+        <div className="text-xs text-gray-600 bg-blue-50 rounded p-3">
+          <div className="font-medium text-blue-800 mb-1">음성 설정</div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>Speed: {getDisplayValue(voiceSettings.speed, 'speed')}</div>
+            <div>Stability: {getDisplayValue(voiceSettings.stability, 'stability')}</div>
+            <div>Similarity: {getDisplayValue(voiceSettings.similarity_boost, 'similarity_boost')}</div>
+            <div>Style: {getDisplayValue(voiceSettings.style, 'style')}</div>
+          </div>
+          <div className="mt-1">
+            Speaker boost: {voiceSettings.use_speaker_boost ? '켜짐' : '꺼짐'}
+          </div>
         </div>
       </div>
 

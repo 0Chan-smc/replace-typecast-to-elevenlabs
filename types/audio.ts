@@ -11,6 +11,7 @@ export interface AudioItem {
   text: string;
   processingTime: number;
   createdAt: Date;
+  voiceSettings: import('@/types/api').VoiceSettings;
   timestamps?: TimestampData[];
 }
 

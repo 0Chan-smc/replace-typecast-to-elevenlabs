@@ -7,9 +7,10 @@ import { TEXT_LIMITS } from '@/lib/constants';
 interface TextInputProps {
   onSubmit: (text: string) => void;
   isLoading: boolean;
+  processingTime?: number;
 }
 
-const TextInput = ({ onSubmit, isLoading }: TextInputProps) => {
+const TextInput = ({ onSubmit, isLoading, processingTime }: TextInputProps) => {
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +40,7 @@ const TextInput = ({ onSubmit, isLoading }: TextInputProps) => {
         </label>
         <textarea
           id="text-input"
-          rows={6}
+          rows={12}
           value={text}
           onChange={handleTextChange}
           className={`w-full rounded-lg border p-4 text-gray-900 focus:ring-2 focus:ring-blue-200 resize-none ${
@@ -64,7 +65,10 @@ const TextInput = ({ onSubmit, isLoading }: TextInputProps) => {
           disabled={!text.trim() || isLoading || remainingChars < 0}
           className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? '생성 중...' : '음성 생성'}
+          {isLoading 
+            ? (processingTime ? `생성 중... ${(processingTime / 1000).toFixed(1)}초` : '생성 중...')
+            : '음성 생성'
+          }
         </button>
       </div>
     </div>
