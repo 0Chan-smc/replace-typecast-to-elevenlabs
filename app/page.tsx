@@ -202,8 +202,8 @@ const HomePage = () => {
         createdAt: new Date(),
         voiceSettings,
         seed: finalSeed,
-        voiceId: selectedVoiceId,
-        voiceName: selectedVoiceName,
+        voiceId: selectedVoiceId || undefined,
+        voiceName: selectedVoiceName || undefined,
       }
 
       setAudioItems((prev) => [newAudioItem, ...prev])

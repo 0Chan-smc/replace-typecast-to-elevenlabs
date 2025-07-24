@@ -31,7 +31,7 @@ const TextInput = ({ onSubmit, isLoading, processingTime, processingStage, isSte
     if (defaultText && text.trim() === '') {
       setText(defaultText);
     }
-  }, [defaultText]);
+  }, [defaultText, text]);
 
   const handleSubmit = () => {
     const validationError = validateTextInput(text);
