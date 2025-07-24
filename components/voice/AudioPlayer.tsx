@@ -8,7 +8,7 @@ import { getDisplayValue } from '@/lib/value-display';
 import type { AudioPlayerProps, AudioPlayerState } from '@/types/audio';
 
 const AudioPlayer = ({ audioItem, autoPlay = false, isNew = false }: AudioPlayerProps) => {
-  const { audioUrl, text, processingTime, createdAt, voiceSettings, seed } = audioItem;
+  const { audioUrl, text, processingTime, createdAt, voiceSettings, seed, voiceId, voiceName } = audioItem;
   const audioRef = useRef<HTMLAudioElement>(null);
   const [audioState, setAudioState] = useState<AudioPlayerState>({
     isPlaying: false,
@@ -126,6 +126,9 @@ const AudioPlayer = ({ audioItem, autoPlay = false, isNew = false }: AudioPlayer
       <div className="space-y-2">
         <div className="text-sm text-gray-500">
           생성 시간: {createdAt.toLocaleString('ko-KR')} · <span className="font-bold">처리 시간: {(processingTime / 1000).toFixed(2)}초</span>
+          {voiceName && (
+            <span> · <span className="font-medium text-blue-600">음성: {voiceName}</span></span>
+          )}
         </div>
         <div className="text-sm text-gray-700 bg-gray-50 rounded p-3">
           {text}

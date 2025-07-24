@@ -6,7 +6,7 @@ import type { Voice } from '@/types/voice'
 
 interface VoiceSelectorProps {
   selectedVoiceId?: string
-  onVoiceSelect: (voiceId: string) => void
+  onVoiceSelect: (voiceId: string, voiceName: string) => void
   className?: string
 }
 
@@ -39,8 +39,8 @@ export const VoiceSelector = ({ selectedVoiceId, onVoiceSelect, className }: Voi
     return sortVoicesByName(filtered)
   }
 
-  const handleVoiceSelect = (voiceId: string) => {
-    onVoiceSelect(voiceId)
+  const handleVoiceSelect = (voiceId: string, voiceName: string) => {
+    onVoiceSelect(voiceId, voiceName)
   }
 
   const playPreview = (previewUrl: string) => {
@@ -83,7 +83,7 @@ export const VoiceSelector = ({ selectedVoiceId, onVoiceSelect, className }: Voi
             className={`cursor-pointer rounded-lg border p-3 transition-colors hover:bg-gray-50 ${
               selectedVoiceId === voice.voice_id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
             }`}
-            onClick={() => handleVoiceSelect(voice.voice_id)}
+            onClick={() => handleVoiceSelect(voice.voice_id, voice.name)}
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">

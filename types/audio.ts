@@ -13,6 +13,8 @@ export interface AudioItem {
   createdAt: Date;
   voiceSettings: import('@/types/api').VoiceSettings;
   seed: number;
+  voiceId?: string;
+  voiceName?: string;
   timestamps?: TimestampData[];
 }
 

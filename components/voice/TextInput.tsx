@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { validateTextInput } from '@/lib/utils';
 import { TEXT_LIMITS } from '@/lib/constants';
+import Tooltip from '@/components/ui/Tooltip';
 
 interface TextInputProps {
   onSubmit: (text: string) => void;
@@ -143,14 +144,16 @@ const TextInput = ({ onSubmit, isLoading, processingTime, processingStage, isSte
             {remainingChars >= 0 ? `${remainingChars}자 남음` : `${Math.abs(remainingChars)}자 초과`}
           </div>
           <div className="flex items-center space-x-2">
-            <button
-              onClick={handleInsertBreak}
-              disabled={isLoading}
-              className="text-xs bg-white hover:bg-gray-50 text-gray-700 border border-blue-500 px-3 py-1 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="1초 휴식 태그 삽입"
-            >
-              Break 삽입
-            </button>
+            <div className="flex items-center">
+              <button
+                onClick={handleInsertBreak}
+                disabled={isLoading}
+                className="text-xs bg-white hover:bg-gray-50 text-gray-700 border border-blue-500 px-3 py-1 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Break 삽입
+              </button>
+              <Tooltip content="3초 이상은 효과가 없습니다" />
+            </div>
             
             {isStereoMode && (
               <>

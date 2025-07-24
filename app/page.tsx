@@ -46,6 +46,7 @@ const HomePage = () => {
   const [isStereoMode, setIsStereoMode] = useState(false)
   const [newlyCreatedId, setNewlyCreatedId] = useState<string | null>(null)
   const [selectedVoiceId, setSelectedVoiceId] = useState<string | null>(null)
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string | null>(null)
 
   // localStorage에서 설정 불러오기
   useEffect(() => {
@@ -201,6 +202,8 @@ const HomePage = () => {
         createdAt: new Date(),
         voiceSettings,
         seed: finalSeed,
+        voiceId: selectedVoiceId,
+        voiceName: selectedVoiceName,
       }
 
       setAudioItems((prev) => [newAudioItem, ...prev])
@@ -304,7 +307,10 @@ const HomePage = () => {
                 voiceSelector={
                   <VoiceSelector
                     selectedVoiceId={selectedVoiceId || undefined}
-                    onVoiceSelect={setSelectedVoiceId}
+                    onVoiceSelect={(voiceId, voiceName) => {
+                      setSelectedVoiceId(voiceId)
+                      setSelectedVoiceName(voiceName)
+                    }}
                   />
                 }
               />
