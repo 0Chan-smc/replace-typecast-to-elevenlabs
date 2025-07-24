@@ -72,8 +72,13 @@ export const VoiceSelector = ({ selectedVoiceId, onVoiceSelect, className }: Voi
 
   return (
     <div className={`bg-white rounded-lg border border-gray-200 shadow-sm p-4 ${className}`}>
-      <div className="mb-3">
+      <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-medium text-gray-900">음성 선택</h3>
+        {selectedVoiceId && (
+          <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
+            {voices.find(v => v.voice_id === selectedVoiceId)?.name || '선택됨'}
+          </span>
+        )}
       </div>
 
       <div className="max-h-64 space-y-2 overflow-y-auto">

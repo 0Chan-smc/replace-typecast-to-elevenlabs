@@ -13,6 +13,7 @@ interface TextInputProps {
   isStereoMode?: boolean;
   defaultText?: string;
   voiceSelector?: React.ReactNode;
+  selectedVoiceId?: string | null;
 }
 
 const BREAK_TAG = '<break time="1.0s" />';
@@ -21,7 +22,7 @@ const LEFT_TAG_END = '[/L]';
 const RIGHT_TAG_START = '[R]';
 const RIGHT_TAG_END = '[/R]';
 
-const TextInput = ({ onSubmit, isLoading, processingTime, processingStage, isStereoMode, defaultText, voiceSelector }: TextInputProps) => {
+const TextInput = ({ onSubmit, isLoading, processingTime, processingStage, isStereoMode, defaultText, voiceSelector, selectedVoiceId }: TextInputProps) => {
   const [text, setText] = useState(defaultText || '');
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -186,7 +187,7 @@ const TextInput = ({ onSubmit, isLoading, processingTime, processingStage, isSte
       <div className="flex justify-center">
         <button
           onClick={handleSubmit}
-          disabled={!text.trim() || isLoading || remainingChars < 0}
+          disabled={!text.trim() || isLoading || remainingChars < 0 || !selectedVoiceId}
           className={`font-medium py-3 px-8 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
             isStereoMode 
               ? 'bg-purple-600 hover:bg-purple-700 text-white' 

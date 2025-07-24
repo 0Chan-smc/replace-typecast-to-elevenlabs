@@ -304,6 +304,7 @@ const HomePage = () => {
                 processingStage={processingStage}
                 isStereoMode={isStereoMode}
                 defaultText={isStereoMode ? DEFAULT_STEREO_TEXT : DEFAULT_NORMAL_TEXT}
+                selectedVoiceId={selectedVoiceId}
                 voiceSelector={
                   <VoiceSelector
                     selectedVoiceId={selectedVoiceId || undefined}
