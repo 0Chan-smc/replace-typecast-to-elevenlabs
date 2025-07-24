@@ -11,6 +11,7 @@ interface TextInputProps {
   processingStage?: 'api' | 'stereo' | null;
   isStereoMode?: boolean;
   defaultText?: string;
+  voiceSelector?: React.ReactNode;
 }
 
 const BREAK_TAG = '<break time="1.0s" />';
@@ -19,7 +20,7 @@ const LEFT_TAG_END = '[/L]';
 const RIGHT_TAG_START = '[R]';
 const RIGHT_TAG_END = '[/R]';
 
-const TextInput = ({ onSubmit, isLoading, processingTime, processingStage, isStereoMode, defaultText }: TextInputProps) => {
+const TextInput = ({ onSubmit, isLoading, processingTime, processingStage, isStereoMode, defaultText, voiceSelector }: TextInputProps) => {
   const [text, setText] = useState(defaultText || '');
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -116,6 +117,11 @@ const TextInput = ({ onSubmit, isLoading, processingTime, processingStage, isSte
 
   return (
     <div className="space-y-4">
+      {voiceSelector && (
+        <div className="mb-4">
+          {voiceSelector}
+        </div>
+      )}
       <div>
         <label htmlFor="text-input" className="block text-sm font-medium text-gray-700 mb-2">
           변환할 텍스트를 입력하세요

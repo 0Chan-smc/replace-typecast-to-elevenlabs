@@ -5,7 +5,7 @@ import type { VoiceSettings } from '@/types/api';
 
 export const POST = async (request: NextRequest) => {
   try {
-    const { text, voice_settings, seed } = await request.json();
+    const { text, voice_settings, seed, voice_id } = await request.json();
 
     if (!text || typeof text !== 'string') {
       return Response.json({ error: '텍스트가 필요합니다.' }, { status: 400 });
@@ -40,8 +40,11 @@ export const POST = async (request: NextRequest) => {
     // 디버깅용 로그
     console.log('Request Body:', JSON.stringify(requestBody, null, 2));
 
+    // voice_id가 제공되지 않으면 기본값 사용
+    const selectedVoiceId = voice_id || ELEVENLABS_CONFIG.VOICE_ID;
+
     const response = await fetch(
-      `${ELEVENLABS_CONFIG.BASE_URL}/text-to-speech/${ELEVENLABS_CONFIG.VOICE_ID}/stream?output_format=${ELEVENLABS_CONFIG.OUTPUT_FORMAT}`,
+      `${ELEVENLABS_CONFIG.BASE_URL}/text-to-speech/${selectedVoiceId}/stream?output_format=${ELEVENLABS_CONFIG.OUTPUT_FORMAT}`,
       {
         method: 'POST',
         headers: {

@@ -5,6 +5,7 @@ import TextInput from '@/components/voice/TextInput'
 import LoadingTimer from '@/components/voice/LoadingTimer'
 import AudioPlayer from '@/components/voice/AudioPlayer'
 import VoiceSettings from '@/components/voice/VoiceSettings'
+import { VoiceSelector } from '@/components/voice/VoiceSelector'
 import { createAudioUrl, cleanupAudioUrl } from '@/lib/audio-utils'
 import { handleApiError } from '@/lib/utils'
 import {
@@ -44,6 +45,7 @@ const HomePage = () => {
   >(null)
   const [isStereoMode, setIsStereoMode] = useState(false)
   const [newlyCreatedId, setNewlyCreatedId] = useState<string | null>(null)
+  const [selectedVoiceId, setSelectedVoiceId] = useState<string | null>(null)
 
   // localStorage에서 설정 불러오기
   useEffect(() => {
@@ -119,6 +121,7 @@ const HomePage = () => {
             text: cleanText,
             voice_settings: voiceSettings,
             seed: finalSeed,
+            voice_id: selectedVoiceId,
           }),
         })
 
@@ -171,6 +174,7 @@ const HomePage = () => {
             text,
             voice_settings: voiceSettings,
             seed: finalSeed,
+            voice_id: selectedVoiceId,
           }),
         })
 
@@ -297,6 +301,12 @@ const HomePage = () => {
                 processingStage={processingStage}
                 isStereoMode={isStereoMode}
                 defaultText={isStereoMode ? DEFAULT_STEREO_TEXT : DEFAULT_NORMAL_TEXT}
+                voiceSelector={
+                  <VoiceSelector
+                    selectedVoiceId={selectedVoiceId || undefined}
+                    onVoiceSelect={setSelectedVoiceId}
+                  />
+                }
               />
 
               {error && (
